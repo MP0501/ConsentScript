@@ -141,7 +141,7 @@ let ConsentFlow = () => {
             tcfCmpApi.update(getTcString(),false)
             loadPreferences();
             addScripts();
-            //insertSettingIcon()
+            insertSettingIcon();
         }
     });
 
@@ -228,9 +228,11 @@ let ConsentFlow = () => {
                         '</div>'+
                     '</div>'+
                 '</div>'+
-                '<div class="cst_cookie_settings">'+
-                    '<img src="https://brawltown.net/img/BT-Logo.webp">'+
-                '</div>'+
+            '    <a class="cst_cookie_settings">'
+            '        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-fill-check" viewBox="0 0 16 16">'
+            '            <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625 11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793z"/>'
+            '        </svg>'
+            '    </a>'
             '</div>';
 
         let purposeText = "";
@@ -287,7 +289,7 @@ let ConsentFlow = () => {
             --cst_banner_width: %banner_width%px;
             --cst_banner_max_height: %banner_max_hight%px;
             --cst_banner_background: %banner_background%;
-            --cst_banner_overlap_color: rgb(0, 0, 0, 0.2);
+            --cst_banner_overlap_color: rgb(0, 0, 0, 0);
             --cst_banner_border_radius: %banner_border_radius%px;
             --cst_banner_border_color: transparent;
             --cst_banner_border_width:  0px;
@@ -349,7 +351,10 @@ let ConsentFlow = () => {
             height: 50px;
             max-width: 10%;
             border-radius: 100px;
-            background-color: rgb(0, 0, 0);
+            background-color: %accept_background_color%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             left: 3%;
             bottom: 5%;
         }
@@ -601,22 +606,30 @@ let ConsentFlow = () => {
 
         let body = document.getElementsByTagName("body")
 
-        let consentText = ''+
-            '<div class="cst_container">'
-            '        <div class="cst_cookie_settings">'
-            '        <img src="%settigns_icon%">'
-            '    </div>'
-            '</div>';
+        let consentText = '<div class="cst_container">'+
+      '    <a class="cst_cookie_settings">'+
+      '        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-fill-check" viewBox="0 0 16 16">'+
+      '            <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625 11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793z"/>'+
+      "        </svg>"+
+      "    </a>"+
+      "</div>";
 
         if(body.length >= 1){
             body[0].innerHTML = consentText + body[0].innerHTML;
-            addEventListeners();
+            insertCssClasses()
+            let openConsentSettings = document.getElementsByClassName("cst_cookie_settings")
+            Array.from(openConsentSettings).forEach(e => {
+                e.addEventListener("click", () => {
+                    showBanner();
+                })
+            })
         }
     }
 
     function hideBanner(){
         let cookiebanners = document.getElementsByClassName("cst_banner")
         Array.from(cookiebanners).forEach( e => e.remove());
+        insertSettingIcon();
 
     }
 
@@ -658,6 +671,7 @@ let ConsentFlow = () => {
 
         addScripts();
         hideBanner();
+        insertSettingIcon();
     }
 
     function rejectAll(){
@@ -675,6 +689,7 @@ let ConsentFlow = () => {
         
         addScripts();
         hideBanner();
+        insertSettingIcon();
     }
 
     function togglePreference(value_type, value_number){
@@ -819,6 +834,7 @@ let ConsentFlow = () => {
                 e.style.display = "block"
             })
         })
+        
 
         let consentCheckBoxInput = document.getElementsByClassName("cst_reason_consent_checkbox");
         Array.from(consentCheckBoxInput).forEach(e => {
@@ -837,7 +853,7 @@ let ConsentFlow = () => {
 
 document.addEventListener('readystatechange', event => {  
     if (event.target.readyState === "interactive") {
-        let blocker = CookieBlocker();
+        //let blocker = CookieBlocker();
     }   
     if (event.target.readyState === "complete") {
         let consent = ConsentFlow();

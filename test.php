@@ -59,4 +59,4 @@ $sg = new ScriptGenerator($vendors, []);
 
 $sg->generateScript();
 
-$sg->getScript();
+print_r($sg->getScript());

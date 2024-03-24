@@ -12,7 +12,7 @@
         }
 
         public function generateScript(){
-            $template = file_get_contents("./out.js");
+            $template = file_get_contents("./lib/out.js");
 
             $template = $this->insertSettings($template);
 
@@ -61,7 +61,7 @@
                 'infos' => "#",
                 'imprint' => "#",
                 'privacy_url' => "#",
-                'vendor_setting' => "Anbieter verwalten",
+                'vendor_settings' => "Anbieter verwalten",
                 'vendor_headline' => "Anbieter verwalten",
                 'purpose_settings' => "Zwecke verwalten",
                 'settings_headline' => "Zwecke verwalten",
@@ -187,7 +187,7 @@
                     $template = str_replace('%imprint%', $value, $template);
                     break;
                 case "vendor_setting":
-                    $template = str_replace('%vendor_setting%', $value, $template);
+                    $template = str_replace('%vendor_settings%', $value, $template);
                     break;
                 case "vendor_headline":
                     $template = str_replace('%vendor_headline%', $value, $template);

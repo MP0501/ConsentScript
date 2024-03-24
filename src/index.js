@@ -162,7 +162,7 @@ let ConsentFlow = () => {
                 '<div class="cst_banner">'+
                     '<div class="cst_main_container">'+
                         '<div class="cst_head">'+
-                           '<img src="%logo%" class="cst_image">'+
+                           '<img src="%icon%" class="cst_image">'+
                             '<h4 class="cst_headline">%headline%</h4>'+
                         '</div>'+
                         '<div class="cst_body">'+

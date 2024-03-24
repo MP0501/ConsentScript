@@ -2,9 +2,20 @@ import{CmpApi}from"@iabtcf/cmpapi";
 import{TCModel,TCString,GVL,Segment}from"@iabtcf/core";
 const cmpstub = require('@iabtcf/stub');
 
+cmpstub();
+
 function getUnixDate(){
     return new Date().getTime();
 }
+
+function setCookieValue(key, vad){
+
+}
+
+function getCookieValue(){
+
+}
+
 
 let CookieBlocker = () => {
 
@@ -137,33 +148,28 @@ let ConsentFlow = () => {
 
     let purposesAllowed = []
 
-    let tcfCmpApi;
-    let tcModel;
     GVL.baseUrl  = "/"
-    const gvl = new GVL();
+    let gvl_obj = new GVL();
+    let cloed_gvl = gvl_obj.clone();
+    let tcModel = new TCModel(gvl_obj);
+    tcModel.cmpId = 99;
+    tcModel.cmpVersion = 2;
+    tcModel.consentScreen = 1;
+    tcModel.isServiceSpecific = true;
+    tcModel.UseNonStandardStacks = 0;
+    const tcfCmpApi = new CmpApi(tcModel.cmpId, tcModel.cmpVersion, tcModel.isServiceSpecific);
 
-    gvl.readyPromise.then(() => {
-        tcModel = new TCModel(new GVL());
-        tcModel.cmpId = 99;
-        tcModel.cmpVersion = 2;
-        tcModel.consentScreen = 1;
-        tcModel.isServiceSpecific = true;
-    
+
+    tcModel.gvl.readyPromise.then(() => {    
         let allVendors = tcModel.gvl.getJson().vendors;
         let allePurposes = tcModel.gvl.getJson().purposes;
-
         purposes = allePurposes
 
         //Filter Vendors for Accepted Purposes
       
         let encodedString = TCString.encode(tcModel);
-
-        tcfCmpApi = new CmpApi(tcModel.cmpId, tcModel.cmpVersion, tcModel.isServiceSpecific);
-        cmpstub();
-
         tcfCmpApi.update(encodedString, false);
       
-        
         showBanner()
     });
 
@@ -354,26 +360,11 @@ let ConsentFlow = () => {
         tcfCmpApi.update(newTcString, false)
         window.localStorage.setItem('cf_tcf_string', newTcString);
 
-        //setCookieValue("cst_consent", JSON.stringify({"date": getUnixDate, }))
+        setCookieValue("cst_consent", JSON.stringify({"date": getUnixDate, }))
 
-        //console.log(TCString.decode(newTcString))
+        __tcfapi('ping', 2, (pingReturn) => {console.log(pingReturn)});
 
-        __tcfapi('getVendorList', 2, (gvl, success) => {
-
-            console.log(success)
-
-            if(success) {
-                
-            console.log(gvl)
-              // do something with gvl
-          
-            } else {
-          
-              // do something else
-          
-            }
-          
-          }, 'LATEST');
+        __tcfapi('getTCData', 2, (tcData, success) => {}, [tcModel.vendors]);
     }
 
     function rejectAll(){
@@ -413,19 +404,6 @@ let ConsentFlow = () => {
 
     }
     
-
-    let cookies = [
-        {
-
-        },
-        {
-
-        }
-    ]
-
-    function setCookies(){
-
-    }
 
     let consentFlowURL = "https://consentflow.de"
     function send_analytics(){

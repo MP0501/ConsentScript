@@ -1,165 +1,16 @@
 <!DOCTYPE html>
 <head>
-    <script src="/script.js"></script>
+    <script src="lib/out.js"></script>
     <link rel="stylesheet" href="/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="cst_container">
-        <div class="cst_banner">
-            <div class="cst_main_container">
-                <div class="cst_head">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Universität_Würzburg_Logo.svg/200px-Universität_Würzburg_Logo.svg.png" class="cst_image">
-                    <h4 class="cst_headline">Wir nutzen Cookies</h4>
-                </div>
-                <div class="cst_body">
-                    <p class="cst_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus rutrum sapien eu odio tempor, vel vehicula magna pulvinar. Suspendisse efficitur finibus tellus, pellentesque maximus mi sollicitudin et. Sed sollicitudin purus quis sapien tempus, ac aliquam eros elementum. Cras id nisi quis libero ultrices placerat. Nunc posuere ligula vitae risus dictum, vel placerat diam ornare. Praesent dignissim sagittis condimentum. Pellentesque finibus mauris dui, a ullamcorper risus varius ut. Duis vulputate mi id condimentum ultrices.
-
-                        Sed condimentum diam nibh, ut faucibus arcu fermentum vel. Nulla facilisis condimentum pharetra. Curabitur a ante purus. Suspendisse pretium eros sit amet auctor eleifend. Nullam posuere, tortor imperdiet interdum mollis, ligula dui placerat erat, id eleifend eros nisi non orci. Vivamus cursus quis nisi et placerat. Sed non posuere eros. Maecenas cursus congue efficitur. Morbi vestibulum porta metus vitae venenatis. Praesent magna orci, interdum at nunc sed, commodo bibendum dui. Sed lobortis ultricies nibh at vulputate.
-                        
-                        
-                       <div class="cst_button_wrap">
-                        <a class="cst_accept">Alle Akzeptieren</a>
-                        <a class="cst_reject">Ablehnen</a>
-                        <a id="cst_settings" class="cst_settings">Einstellungen</a>
-                    </div>
-                    <div class="cst_button_wrap">
-                        <a class="cst_link">Mehr Infos</a>
-                        <a class="cst_link">Impressum</a>
-                        <a class="cst_link">Datenschutz</a>
-                    </div>
-                </div>
-            </div>
-            <div class="cst_settings_container">
-                <div class="cst_head">
-                    <h4 class="cst_headline">Einstellungen</h4>
-                </div>
-                <div class="cst_body">
-                    <div class="cst_scroll">
-                        <div class="cst_reason_container">
-                            <div class="cst_reason_info">
-                                <h5 class="cst_reason_h">Statistiken</h5>
-                                <p class="cst_reason_p">Die technische Speicherung oder der Zugriff, der ausschließlich zu anonymen statistischen Zwecken verwendet wird. Ohne eine Vorladung, die freiwillige Zustimmung deines Internetdienstanbieters oder zusätzliche Aufzeichnungen von Dritten können die zu diesem Zweck gespeicherten oder abgerufenen Informationen allein in der Regel nicht dazu verwendet werden, dich zu identifizieren.</p>
-                            </div>
-                            <div class="cst_reason_consent_container">
-                                <label class="cst_reason_consent_switch">
-                                    <input type="checkbox" class="cst_reason_consent_checkbox">
-                                    <span class="cst_reason_consent_slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="cst_reason_container">
-                            <div class="cst_reason_info">
-                                <h5 class="cst_reason_h">Marketing</h5>
-                                <p class="cst_reason_p">Die technische Speicherung oder der Zugriff ist erforderlich, um Nutzerprofile zu erstellen, um Werbung zu versenden oder um den Nutzer auf einer Website oder über mehrere Websites hinweg zu ähnlichen Marketingzwecken zu verfolgen.</p>
-                            </div>
-                            <div class="cst_reason_consent_container">
-                                <label class="cst_reason_consent_switch">
-                                    <input type="checkbox" class="cst_reason_consent_checkbox">
-                                    <span class="cst_reason_consent_slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="cst_reason_container">
-                            <div class="cst_reason_info">
-                                <h5 class="cst_reason_h">Präferenzen</h5>
-                                <p class="cst_reason_p">Die technische Speicherung oder der Zugriff ist für den rechtmäßigen Zweck der Speicherung von Präferenzen erforderlich, die nicht vom Abonnenten oder Benutzer angefordert wurden.</p>
-                            </div>
-                            <div class="cst_reason_consent_container">
-                                <label class="cst_reason_consent_switch">
-                                    <input type="checkbox" class="cst_reason_consent_checkbox">
-                                    <span class="cst_reason_consent_slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="cst_reason_container">
-                            <div class="cst_reason_info">
-                                <h5 class="cst_reason_h">Erforderlich</h5>
-                                <p class="cst_reason_p">Die technische Speicherung oder der Zugang ist unbedingt erforderlich für den rechtmäßigen Zweck, die Nutzung eines bestimmten Dienstes zu ermöglichen, der vom Teilnehmer oder Nutzer ausdrücklich gewünscht wird, oder für den alleinigen Zweck, die Übertragung einer Nachricht über ein elektronisches Kommunikationsnetz durchzuführen.</p>
-                            </div>
-                        </div>
-                        <a class="cst_link" id="cst_vendor_settings">Anbieter Verwalten</a>
-                    </div>
-                    <div class="cst_button_wrap">
-                        <a class="cst_accept">Alle Akzeptieren</a>
-                        <a class="cst_reject">Ablehnen</a>
-                        <a class="cst_settings cst_save_settings">Speichern</a>
-                    </div>
-                    <div class="cst_button_wrap">
-                        <a class="cst_link">Mehr Infos</a>
-                        <a class="cst_link">Impressum</a>
-                        <a class="cst_link">Datenschutz</a>
-                    </div>
-                </div>
-            </div>
-            <div class="cst_vendors_container">
-                <div class="cst_head">
-                    <h4 class="cst_headline">Anbieter verwalten</h4>
-                </div>
-                <div class="cst_body">
-                    <div class="cst_scroll">
-                        <div class="cst_reason_container">
-                            <div class="cst_reason_info">
-                                <h5 class="cst_reason_h">Google Analytics</h5>
-                                <p class="cst_reason_p">Wir verwende Google Analytics um unser Nutzervhalten zu Analysieren</p>
-                                <table class="cst_reason_table">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Zweck</th>
-                                        <th>Ablaufdatum</th>
-                                    </tr>
-                                    <tr>
-                                        <td>_ga</td>
-                                        <td></td>
-                                        <td>2y</td>
-                                    </tr>
-                                    <tr>
-                                        <td>_gid</td>
-                                        <td></td>
-                                        <td>1d</td>
-                                    </tr>
-                                    <tr>
-                                        <td>td</td>
-                                        <td></td>
-                                        <td>Session</td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div class="cst_reason_consent_container">
-                                <label class="cst_reason_consent_switch">
-                                    <input type="checkbox" class="cst_reason_consent_checkbox">
-                                    <span class="cst_reason_consent_slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <a class="cst_link" id="cst_reason_settings">Zwecke verwalten</a>
-                    </div>
-                    <div class="cst_button_wrap">
-                        <a class="cst_accept">Alle Akzeptieren</a>
-                        <a class="cst_reject">Ablehnen</a>
-                        <a class="cst_settings  cst_save_settings">Speichern</a>
-                    </div>
-                    <div class="cst_button_wrap">
-                        <a class="cst_link">Mehr Infos</a>
-                        <a class="cst_link">Impressum</a>
-                        <a class="cst_link">Datenschutz</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="cst_cookie_settings">
-            <img src="https://brawltown.net/img/BT-Logo.webp">
-        </div>
-    </div>
+    
 
     <script>
-        __tcfapi('ping', 2, (pingReturn) => {
-
-        console.log("test")
-
-        });
+       
 
     </script>
 </body>

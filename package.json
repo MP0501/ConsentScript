@@ -6,7 +6,8 @@
   "dependencies": {
     "@iabtcf/cmpapi": "^1.5.6",
     "@iabtcf/core": "^1.5.6",
-    "@iabtcf/stub": "^1.5.6"
+    "@iabtcf/stub": "^1.5.6",
+    "consent-string": "^1.5.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

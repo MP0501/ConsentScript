@@ -8,12 +8,30 @@ function getUnixDate(){
     return new Date().getTime();
 }
 
-function setCookieValue(key, vad){
-
+function setCookieValue(key, val){
+    const d = new Date();
+    d.setTime(d.getTime() + (30*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    val.path = "/"
+    val.expires = expires
+    val.createDate = getUnixDate();
+    document.cookie = key + "=" +JSON.stringify(val);
 }
 
-function getCookieValue(){
-
+function getCookieValue(kea){
+    let name = kea + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return JSON.parse(c.substring(name.length, c.length));
+      }
+    }
+    return null;
 }
 
 
@@ -89,58 +107,10 @@ let CookieBlocker = () => {
 }
 
 let ConsentFlow = () => {
+
+    let generateDate = "insert_date";
     
-    const vendors = [
-        {
-            "id": 1,
-            "iab_id": 755,
-            "name": "Google Advertising Products",
-            "purposes": [1,3,4],
-            "legIntPurposes": [2,5,6,7,9,10],
-            "flexiblePurposes": [2,5,6,7,9,10],
-            "specialPurposes": [1],
-            "features": [1,2],
-            "specialFeatures": [],
-            "policyUrl": "https://policies.google.com/privacy",
-            "cookieMaxAgeSeconds": 34190000,
-            "usesCookies": true,
-            "cookieRefresh": false,
-            "usesNonCookieAccess": true,
-            "deviceStorageDisclosureUrl": "https://www.gstatic.com/iabtcf/deviceStorageDisclosure.json"
-    },
-    {
-            "id": 2,
-            "iab_id": 25,
-            "name": "Yahoo EMEA Limited",
-            "purposes": [1,3,4,5,6],
-            "legIntPurposes": [2,7,8,9,10],
-            "flexiblePurposes": [2,7,8,9,10],
-            "specialPurposes": [1,2],
-            "features": [1,2,3],
-            "specialFeatures": [1],
-            "policyUrl": "https://legal.yahoo.com/ie/en/yahoo/privacy/index.html",
-            "cookieMaxAgeSeconds": 34300800,
-            "usesCookies": true,
-            "cookieRefresh": true,
-            "usesNonCookieAccess": false
-    },
-    {
-            "id": 3,
-            "iab_id": null,
-            "name": "Custom Cookie",
-            "purposes": [1,5,6],
-            "legIntPurposes": [2,7,8,9,10],
-            "flexiblePurposes": [2,7,8,9,10],
-            "specialPurposes": [1,2],
-            "features": [1,2,3],
-            "specialFeatures": [1],
-            "policyUrl": "",
-            "cookieMaxAgeSeconds": 34300800,
-            "usesCookies": true,
-            "cookieRefresh": true,
-            "usesNonCookieAccess": false
-    }
-    ]
+    const vendors = "insert_vendors"
 
     let vendorsAllowed = []
 
@@ -164,13 +134,15 @@ let ConsentFlow = () => {
         let allVendors = tcModel.gvl.getJson().vendors;
         let allePurposes = tcModel.gvl.getJson().purposes;
         purposes = allePurposes
-
-        //Filter Vendors for Accepted Purposes
-      
-        let encodedString = TCString.encode(tcModel);
-        tcfCmpApi.update(encodedString, false);
-      
-        showBanner()
+        
+        if(!consentStatus()){
+             showBanner();
+        }else{
+            tcfCmpApi.update(getTcString(),false)
+            loadPreferences();
+            addScripts();
+            //insertSettingIcon()
+        }
     });
 
     
@@ -201,9 +173,9 @@ let ConsentFlow = () => {
                                 '<a id="cst_settings" class="cst_settings">%settings%</a>'+
                             '</div>'+
                             '<div class="cst_button_wrap">'+
-                                '<a class="cst_link">%infos%</a>'+
-                                '<a class="cst_link">%imprint%</a>'+
-                                '<a class="cst_link">%privacy%</a>'+
+                                '<a class="cst_link">Mehr Infos</a>'+
+                                '<a class="cst_link" href="%imprint%">Impressum</a>'+
+                                '<a class="cst_link" href="%privacy%">Datenschutz</a>'+
                             '</div>'+
                         '</div>'+
                     '</div>'+
@@ -228,9 +200,9 @@ let ConsentFlow = () => {
                                 '<a id="cst_settings" class="cst_settings cst_save_settings">%save_settings%</a>'+
                             '</div>'+
                             '<div class="cst_button_wrap">'+
-                                '<a class="cst_link">%infos%</a>'+
-                                '<a class="cst_link">%imprint%</a>'+
-                                '<a class="cst_link">%privacy%</a>'+
+                                '<a class="cst_link">Mehr Infos</a>'+
+                                '<a class="cst_link" href="%imprint%">Impressum</a>'+
+                                '<a class="cst_link" href="%privacy%">Datenschutz</a>'+
                             '</div>'+
                         '</div>'+
                     '</div>'+
@@ -249,9 +221,9 @@ let ConsentFlow = () => {
                                 '<a id="cst_settings" class="cst_settings cst_save_settings">%save_settings%</a>'+
                             '</div>'+
                             '<div class="cst_button_wrap">'+
-                                '<a class="cst_link">%infos%</a>'+
-                                '<a class="cst_link">%imprint%</a>'+
-                                '<a class="cst_link">%privacy%</a>'+
+                                '<a class="cst_link">Mehr Infos</a>'+
+                                '<a class="cst_link" href="%imprint%">Impressum</a>'+
+                                '<a class="cst_link" href="%privacy%">Datenschutz</a>'+
                             '</div>'+
                         '</div>'+
                     '</div>'+
@@ -261,22 +233,6 @@ let ConsentFlow = () => {
                 '</div>'+
             '</div>';
 
-        consentText = consentText.replaceAll("%logo%", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Universität_Würzburg_Logo.svg/200px-Universität_Würzburg_Logo.svg.png");
-        consentText = consentText.replaceAll("%info_text%", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus rutrum sapien eu odio tempor, vel vehicula magna pulvinar. Suspendisse efficitur finibus tellus, pellentesque maximus mi sollicitudin et. Sed sollicitudin purus quis sapien tempus, ac aliquam eros elementum. Cras id nisi quis libero ultrices placerat. Nunc posuere ligula vitae risus dictum, vel placerat diam ornare. Praesent dignissim sagittis condimentum. Pellentesque finibus mauris dui, a ullamcorper risus varius ut. Duis vulputate mi id condimentum ultrices.");
-        consentText = consentText.replaceAll("%headline%", "Wir nutzen Cookies");
-        consentText = consentText.replaceAll("%accept%", "Alle Akzeptieren");
-        consentText = consentText.replaceAll("%reject%", "Ablehnen");
-        consentText = consentText.replaceAll("%settings%", "Einstellungen");
-        consentText = consentText.replaceAll("%infos%", "Mehr Infos");
-        consentText = consentText.replaceAll("%imprint%", "Impressum");
-        consentText = consentText.replaceAll("%privacy%", "Datenschutz");
-        consentText = consentText.replaceAll("%settings_headline%", "Einstellungen");
-        consentText = consentText.replaceAll("%vendor_settings%", "Anbieter Verwalten");
-        consentText = consentText.replaceAll("%vendor_headline%", "Anbieter Verwalten");
-        consentText = consentText.replaceAll("%purpose_settings%", "Zwecke verwalten");
-        consentText = consentText.replaceAll("%setting_icon%", "https://brawltown.net/img/BT-Logo.webp");
-        consentText = consentText.replaceAll("%save_settings%", "Speichern");
-        
         let purposeText = "";
 
         for (const [key, value] of Object.entries(purposes)) {
@@ -319,11 +275,349 @@ let ConsentFlow = () => {
         consentText = consentText.replace("%vendors%", vendorsText);
 
         if(body.length >= 1){
+            insertCssClasses();
             body[0].innerHTML = consentText + body[0].innerHTML;
             addEventListeners();
         }
+    }
 
-        tcfCmpApi.update('', true)
+    function insertCssClasses(){
+        let cssText = `
+        :root {
+            --cst_banner_width: %banner_width%px;
+            --cst_banner_max_height: %banner_max_hight%px;
+            --cst_banner_background: %banner_background%;
+            --cst_banner_overlap_color: rgb(0, 0, 0, 0.2);
+            --cst_banner_border_radius: %banner_border_radius%px;
+            --cst_banner_border_color: transparent;
+            --cst_banner_border_width:  0px;
+            --cst_banner_border_sytle:  solid;
+            --cst_banner_position_left: 50%;
+            --cst_banner_position_right: 50%;
+            --cst_headline_size: %headline_size%px;
+            --cst_headline_color: %headline_color%;
+            --cst_headline2_size: %paragraph_size%px;
+            --cst_headline2_color: %paragraph_color%;
+            --cst_paragraph_size: %paragraph_size%px;
+            --cst_paragraph_color: %paragraph_color%;
+            --cst_accept_button_backround_color: %accept_background_color%;
+            --cst_accept_button_border_color: %accept_border_color%;
+            --cst_accept_button_color: %accept_color%;
+            --cst_accept_button_font_size: 18px;
+            --cst_accept_button_font_weight: bold;
+            --cst_accept_button_width: 25%;
+            --cst_accept_border_radius: %accept_border_radius%px;
+            --cst_accept_border_width: %accept_border_width%px;
+            --cst_reject_button_backround_color: %reject_background_color%;
+            --cst_reject_button_border_color: %reject_border_color%;
+            --cst_reject_button_color: %reject_color%;
+            --cst_reject_button_font_size: 18px;
+            --cst_reject_button_font_weight: normal;
+            --cst_reject_button_width: 25%;
+            --cst_reject_border_radius: %reject_border_radius%px;
+            --cst_reject_border_width: %reject_border_width%px;
+            --cst_settings_button_backround_color: %settings_background_color%;
+            --cst_settings_button_border_color: %settings_border_color%;
+            --cst_settings_button_color:  %settings_color%;
+            --cst_settings_button_font_size: 18px;
+            --cst_setttings_button_font_weight: normal;
+            --cst_settings_button_width: 25%;
+            --cst_settings_border_radius: %settings_border_radius%px;
+            --cst_settings_border_width: %settings_border_width%px;
+            --cst_link_color: %link_color%;
+            --cst_link_font_size: %link_font_size%px;
+            --cst_link_decoration: underline;
+        }
+        
+        .cst_container{
+            margin: 0;
+            padding: 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background-color: var(--cst_banner_overlap_color);
+            z-index: 999;
+        }
+        
+        .cst_container .cst_cookie_settings{
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            max-width: 10%;
+            border-radius: 100px;
+            background-color: rgb(0, 0, 0);
+            left: 3%;
+            bottom: 5%;
+        }
+        
+        .cst_container .cst_cookie_settings img{
+            height: 50%;
+        }
+        
+        .cst_container .cst_banner{
+            background-color: var(--cst_banner_background);
+            border-radius: var(--cst_banner_border_radius);
+            max-height: 90%;
+            overflow: scroll;
+            padding: 35px;
+            max-width: 90%;
+            width: var(--cst_banner_width);
+            position: fixed;
+            left: var(--cst_banner_position_left);
+            top: var(--cst_banner_position_right);
+            transform: translateX(-50%) translateY(-50%);
+            display: block;
+        }
+        
+        .cst_container .cst_banner .cst_main_container{
+            display: block;
+        }
+        
+        .cst_container .cst_banner .cst_settings_container{
+            display: none;
+        }
+        
+        .cst_container .cst_banner .cst_vendors_container{
+            display: none;
+        }
+        
+        .cst_container .cst_banner .cst_head{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cst_container .cst_banner .cst_head .cst_image{
+            max-width: 20%;
+        }
+        
+        .cst_container .cst_banner .cst_head .cst_headline{
+            font-weight: bold;
+            font-size: var(--cst_headline_size);
+            margin: 0px;
+            margin-top: 10px;
+            color: var(--cst_headline_color);
+        }
+        
+        .cst_container .cst_banner .cst_body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_text{
+            font-weight: normal;
+            font-size: var(--cst_paragraph_size);
+            margin: 10px;
+            color: var(--cst_paragraph_color);
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_button_wrap{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_button_wrap .cst_reject{
+            min-width: var(--cst_reject_button_width);
+            padding: 10px;
+            text-align: center;
+            margin: 5px;
+            background-color: var(--cst_reject_button_backround_color);
+            color: var(--cst_reject_button_color);
+            font-weight: normal;
+            font-size: var(--cst_reject_button_font_size);
+            border-radius: var(--cst_reject_border_radius);
+            border-color: var(--cst_reject_button_border_color);
+            border-width: var(--cst_reject_border_width);
+            border-style: solid;
+            text-decoration: none;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_button_wrap .cst_settings{
+            min-width: var(--cst_setting_button_width);
+            padding: 10px;
+            text-align: center;
+            margin: 5px;
+            background-color: var(--cst_settings_button_backround_color);
+            color: var(--cst_settings_button_color);
+            font-weight: normal;
+            font-size: var(--cst_settings_button_font_size);
+            border-radius: var(--cst_settings_border_radius);
+            border-color: var(--cst_settings_button_border_color);
+            border-width: var(--cst_settings_border_width);
+            border-style: solid;
+            text-decoration: none;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_button_wrap .cst_accept{
+            min-width: var(--cst_accept_button_width);
+            padding: 10px;
+            text-align: center;
+            margin: 5px;
+            background-color: var(--cst_accept_button_backround_color);
+            color: var(--cst_accept_button_color);
+            font-weight: normal;
+            font-size: var(--cst_accept_button_font_size);
+            border-radius: var(--cst_accept_border_radius);
+            border-color: var(--cst_accept_button_border_color);
+            border-width: var(--cst_accept_border_width);
+            border-style: solid;
+            text-decoration: none;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_button_wrap .cst_link{
+            text-decoration: underline;
+            margin: 5px;
+            font-size: 16px;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_scroll{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 400px;
+            max-height: 60%;
+            overflow: scroll;
+            padding-bottom: 20px;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_h{
+            font-weight: bold;
+            font-size: var(--cst_headline2_size);
+            margin: 5px;
+            color: var(--cst_headline2_color);
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_p{
+            font-weight: normal;
+            font-size: var(--cst_paragraph_size);
+            margin: 5px;
+            color: var(--cst_paragraph_color);
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_table{
+            margin: 5px;
+            width:90%;
+            padding: 10px
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_table td, th, tr, table{
+            border-width: 1px;
+            border-color: rgb(0, 0, 0, 0.5);
+            border-style: solid;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_table th{
+            padding: 4px;
+            text-align: start;
+            font-size: 16px;
+            font-weight: bold;
+            color: rgb(0, 0, 0);
+            background-color: rgb(0, 0, 0, 0.1);
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_reason_table td{
+            padding: 4px;
+            text-align: start;
+            font-size: 14px;
+            font-weight: normal;
+            color: rgb(0, 0, 0);
+        }
+        
+        .cst_container .cst_banner .cst_body .cst_link{
+            text-decoration: var(--cst_link_decoration);
+            margin: 5px;
+            font-size: var(--cst_link_font_size);
+            color: var(--cst_link_color);
+        }
+        
+        .cst_reason_consent_switch {
+            margin: 5px;
+            position: relative;
+            display: inline-block;
+            width: 45px;
+            height: 26px;
+          }
+          
+         .cst_reason_consent_checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          .cst_reason_consent_slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          .cst_reason_consent_slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          .cst_reason_consent_checkbox:checked + .cst_reason_consent_slider {
+            background-color: #2196F3;
+          }
+          
+          .cst_reason_consent_checkbox:focus + .cst_reason_consent_slider {
+            box-shadow: 0 0 1px #2196F3;
+          }
+          
+          .cst_reason_consent_checkbox:checked + .cst_reason_consent_slider:before {
+            -webkit-transform: translateX(17px);
+            -ms-transform: translateX(17px);
+            transform: translateX(17px);
+          }        
+        `
+
+        document.head.innerHTML = document.head.innerHTML + "<style>"+cssText+"</style>"
+
+    }
+
+    function insertSettingIcon(){
+
+        let body = document.getElementsByTagName("body")
+
+        let consentText = ''+
+            '<div class="cst_container">'
+            '        <div class="cst_cookie_settings">'
+            '        <img src="%settigns_icon%">'
+            '    </div>'
+            '</div>';
+
+        if(body.length >= 1){
+            body[0].innerHTML = consentText + body[0].innerHTML;
+            addEventListeners();
+        }
+    }
+
+    function hideBanner(){
+        let cookiebanners = document.getElementsByClassName("cst_banner")
+        Array.from(cookiebanners).forEach( e => e.remove());
+
     }
 
     function getPurposenames(inputPurpose){
@@ -358,13 +652,12 @@ let ConsentFlow = () => {
 
         let newTcString = createTcString()
         tcfCmpApi.update(newTcString, false)
-        window.localStorage.setItem('cf_tcf_string', newTcString);
 
-        setCookieValue("cst_consent", JSON.stringify({"date": getUnixDate, }))
+        setCookieValue('cf_tcf_string', newTcString)
+        setCookieValue("cst_consent", {allowedPurposes: purposesAllowed, allowedVendors: vendorsAllowed})
 
-        __tcfapi('ping', 2, (pingReturn) => {console.log(pingReturn)});
-
-        __tcfapi('getTCData', 2, (tcData, success) => {}, [tcModel.vendors]);
+        addScripts();
+        hideBanner();
     }
 
     function rejectAll(){
@@ -376,7 +669,12 @@ let ConsentFlow = () => {
 
         let newTcString = createTcString()
         tcfCmpApi.update(newTcString, false)
-        window.localStorage.setItem('cf_tcf_string', newTcString);
+
+        setCookieValue('cf_tcf_string', newTcString)
+        setCookieValue("cst_consent", {allowedPurposes: purposesAllowed, allowedVendors: vendorsAllowed})
+        
+        addScripts();
+        hideBanner();
     }
 
     function togglePreference(value_type, value_number){
@@ -400,8 +698,56 @@ let ConsentFlow = () => {
 
         let newTcString = createTcString()
         tcfCmpApi.update(newTcString, false)
-        window.localStorage.setItem('cf_tcf_string', newTcString);
 
+        setCookieValue('cf_tcf_string', newTcString)
+        setCookieValue("cst_consent", {allowedPurposes: purposesAllowed, allowedVendors: vendorsAllowed})
+        
+        addScripts();
+        hideBanner();
+    }
+
+    function consentStatus(){
+        let consent_string = getCookieValue("cst_consent");
+
+        if(!consent_string || !consent_string.createDate){
+            return false;
+        }
+        if(consent_string.createDate > generateDate){
+            return true;
+        }
+    }
+
+    function loadPreferences(){
+        let consent_string = getCookieValue("cst_consent");
+
+        if(consent_string.allowedPurposes){
+            purposesAllowed = consent_string.allowedPurposes
+        }
+
+        if(consent_string.allowedVendors){
+            vendorsAllowed = consent_string.allowedVendors
+        }
+    }
+
+    function getTcString(){
+        let tcfstring = getCookieValue("cf_tcf_string");
+
+        if(tcfstring) return tcfstring;
+
+        showBanner();
+        return ""
+    }
+
+    function addScripts(){
+        vendorsAllowed.forEach( id => {
+            let vendor_obj = vendors.find( v => {
+                return v.id == id
+            })
+
+            if(vendor_obj.script){
+                document.head.innerHTML = document.head.innerHTML + vendor_obj.script
+            }
+        })
     }
     
 
@@ -415,7 +761,6 @@ let ConsentFlow = () => {
         let acceptAllButtons = document.getElementsByClassName("cst_accept");
         Array.from(acceptAllButtons).forEach(e => {
             e.addEventListener("click", () => {
-                console.log("Accepted all")
                 acceptAll()
             })
         })
@@ -424,7 +769,6 @@ let ConsentFlow = () => {
         let rejectAllButtons = document.getElementsByClassName("cst_reject");
         Array.from(rejectAllButtons).forEach(e => {
             e.addEventListener("click", () => {
-                console.log("Rejected all")
                 rejectAll()
             })
         })
@@ -433,7 +777,6 @@ let ConsentFlow = () => {
         let saveSettingsAllButtons = document.getElementsByClassName("cst_save_settings");
         Array.from(saveSettingsAllButtons).forEach(e => {
             e.addEventListener("click", () => {
-                console.log("Settings saved")
                 saveSettings();
             })
         })
@@ -441,7 +784,6 @@ let ConsentFlow = () => {
         //Settings Button deaktiviert die Main Page und Zeigt die Zwecke Page
         let settingsButton = document.getElementById("cst_settings");
         settingsButton.addEventListener("click", () => {
-            console.log("pressed")
             let mainContainer = document.getElementsByClassName("cst_main_container");
             Array.from(mainContainer).forEach(e => {
                 e.style.display = "none"

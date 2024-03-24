@@ -12,7 +12,7 @@
         }
 
         public function generateScript(){
-            $template = file_get_contents("./lib/out.js");
+            $template = file_get_contents("./out.js");
 
             $template = $this->insertSettings($template);
 

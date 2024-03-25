@@ -834,8 +834,14 @@ let ConsentFlow = () => {
                 e.style.display = "block"
             })
         })
-        
 
+        let openConsentSettings = document.getElementsByClassName("cst_cookie_settings")
+        Array.from(openConsentSettings).forEach(e => {
+            e.addEventListener("click", () => {
+                showBanner();
+            })
+        })
+        
         let consentCheckBoxInput = document.getElementsByClassName("cst_reason_consent_checkbox");
         Array.from(consentCheckBoxInput).forEach(e => {
             e.addEventListener("input", (i) => {

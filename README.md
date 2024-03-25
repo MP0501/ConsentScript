@@ -21,3 +21,7 @@ Diese PHP Klasse erstellt ein nutzerspezifisches Consent Skript. Implentiert wir
 Der Klasse wird ein Array mit allen Vendors und Einstellungen übergeben.
 Die Einstellungen werden anschließend mit Hilfe der Template-Tags in das Consent Script eingefügt. Wurde eine Einstellung nicht vom Nutzer überschrieben, wird ein Standardwert eingefügt.
 Nach der Generierung wird das Skript in einem Object Storage bei bunny.net gespeichert. Damit keine API-Keys veröffentlicht werden müssen, wird die Funktionalität im Admin Panel auskommentiert und hier alle API-Keys durch Platzhalter entfernt.
+
+## __tcapi()
+Die __tcapi() ermöglicht es Vendors, die auf der Website implementiert wurden, den Status der Einwilligung abzurufen und somit zu überprüfen, ob eingewilligt wurde, dass sie Daten erheben und verarbeiten dürfen.
+Mehr Infos: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md

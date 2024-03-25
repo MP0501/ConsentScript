@@ -55,7 +55,7 @@ $vendors = json_decode('
 ]
 ');
 
-$sg = new ScriptGenerator($vendors, []);
+$sg = new ScriptGenerator($vendors, [], 1);
 
 $sg->generateScript();
 

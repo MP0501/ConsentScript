@@ -1,18 +1,22 @@
 <?php
-    class ScriptGenerator{
+  class ScriptGenerator{
 
         private $vendors;
         private $setting;
         private $script;
+        private $consent_id;
 
-        public function __construct($vendors, $settings)
+        //Übergeben wird eine Liste mit aller für das Consent relevanten Vendors, die Einstellungen und die ConsentID
+        public function __construct($vendors, $settings, $consent_id)
         {
             $this->vendors = $vendors;
             $this->setting = $settings;
+            $this->consent_id = $consent_id;
         }
 
+        //Generiert das Script an Hand der Inputs
         public function generateScript(){
-            $template = file_get_contents("./lib/out.js");
+            $template = file_get_contents(__DIR__."/out.js");
 
             $template = $this->insertSettings($template);
 
@@ -21,15 +25,76 @@
             $this->script = $template;
         }
 
+        //Alte funktion welche zum Debbugen genutz wird
         public function getScript(){
             file_put_contents("./test.js", $this->script);
         }
 
+        //Speicher das Skript auf dem CDN
+        public function saveScript(){
+            file_put_contents("./consents/".$this->consent_id, $this->script);
+            
+            //API-Keys wurden entfernt, da das Repository öffentlich ist
+            $REGION = '';
+            $BASE_HOSTNAME = 'storage.bunnycdn.com';
+            $HOSTNAME = (!empty($REGION)) ? "{$REGION}.{$BASE_HOSTNAME}" : $BASE_HOSTNAME;
+            $STORAGE_ZONE_NAME = 'consentflow';
+            $FILENAME_TO_UPLOAD = "/consents/".$this->consent_id;
+            $ACCESS_KEY = 'API-KEY';
+            $FILE_PATH = "/consents/".$this->consent_id;  // Full path to your local file
+
+            $url = "https://{$HOSTNAME}/{$STORAGE_ZONE_NAME}/{$FILENAME_TO_UPLOAD}";
+
+            $ch = curl_init();
+
+            $options = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => fopen($FILE_PATH, 'r'),
+            CURLOPT_INFILESIZE => filesize($FILE_PATH),
+            CURLOPT_HTTPHEADER => array(
+                "AccessKey: {$ACCESS_KEY}",
+                'Content-Type: application/octet-stream'
+            )
+            );
+
+            curl_setopt_array($ch, $options);
+
+            $response = curl_exec($ch);
+
+            curl_close($ch);
+
+            $ch = curl_init();
+
+            $options = array(
+                CURLOPT_URL => 'https://api.bunny.net/purge?url=https://static.consentflow.de/consents/'.$this->consent_id,
+                CURLOPT_HTTPHEADER => array(
+                    "AccessKey: API_KEY",
+                    'accept: application/json'
+                )
+            );
+            curl_setopt_array($ch, $options);
+
+            $response = curl_exec($ch);
+
+            unlink("./consents/".$this->consent_id);
+
+            if (!$response) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+
+        //Einfügen der Settings, die nicht von User überschrieben wurden
         private function insertDefaultSettings($template){
             $defaultValues = [
                 'design_choice' => '1',
                 'banner_width' => '500',
-                'banner_max_height' => '800',
+                'top' => "50%",
+                'left' => "50%",
                 'banner_background' => 'rgb(255, 255, 255);',
                 'banner_border_radius' => '20',
                 'headline_text' => 'Wir nutzen Cookies',
@@ -61,7 +126,7 @@
                 'infos' => "#",
                 'imprint' => "#",
                 'privacy_url' => "#",
-                'vendor_settings' => "Anbieter verwalten",
+                'vendor_setting' => "Anbieter verwalten",
                 'vendor_headline' => "Anbieter verwalten",
                 'purpose_settings' => "Zwecke verwalten",
                 'settings_headline' => "Zwecke verwalten",
@@ -76,9 +141,11 @@
             return $template;
         }   
 
+        //Einfügen der Settings des Users
         private function insertSettings($template){
             $template = str_replace('"insert_vendors"', json_encode($this->vendors), $template);
             $template = str_replace('"insert_date"', time(), $template);
+            $template = str_replace('"insert_consent_id"', $this->consent_id, $template);
 
             foreach($this->setting as $key => $value){
                 $template = $this->insertValue($template, $key, $value);
@@ -87,7 +154,7 @@
             return $template;
         }
 
-
+        //Einfügen auf die Template Codes
         function insertValue($template, $key, $value){
             switch(strtolower($key)){
                 case "banner_max_hight":
@@ -207,6 +274,28 @@
                 case "icon":
                     $template = str_replace('%icon%', $value, $template);
                     break;
+                case "top":
+                    $template = str_replace('%postion_top%', $value, $template);
+                    break;
+                case "left":
+                    $template = str_replace('%postion_left%', $value, $template);
+                    break;
+                case "design_choice":
+                    switch($value){
+                        case 1:
+                            $template = str_replace('%postion_left%', "50%", $template);
+                            $template = str_replace('%postion_top%', "50%", $template);
+                            break;
+                        case 2:
+                            $template = str_replace('%postion_left%', "50%", $template);
+                            $template = str_replace('%postion_top%', "50%", $template);
+                            $template = str_replace('%banner_width%', "80%", $template);
+                            break;
+                        case 3:
+                            $template = str_replace('%postion_left%', "80%", $template);
+                            $template = str_replace('%postion_top%', "60%", $template);
+                            break;
+                    }
             }
 
             return $template;
